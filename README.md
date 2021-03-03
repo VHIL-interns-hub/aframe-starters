@@ -2,6 +2,7 @@
 This repo contains mini-projects made using A-Frame. Interns build these projects in the first week of their A-Frame VR internship.
 
 # Directory structure
+To add a new project, create a directory with the following structure:
 ```
 - ProjectName/
   - Code/  - should contain the codebase
