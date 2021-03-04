@@ -5,8 +5,8 @@ This repo contains mini-projects made using A-Frame. Interns build these project
 To add a new project, create a directory with the following structure:
 ```
 - ProjectName/
-  - Code/  - should contain the codebase
-  - Documents/  - should contain designs and writeups
+  - code/  - should contain the codebase
+  - documents/  - should contain designs and writeups
   - README.md
 ```
 # Commit Guidelines
