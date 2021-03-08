@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Solar System</title>
     <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-animation-component@^5.1.2/dist/aframe-animation-component.min.js"></script>
     <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script>
   </head>
   <script>
-
     // Function to print relevant information according to id of space object passed
     function printMsg(objID) {
       switch (objID) {
@@ -18,59 +18,102 @@
             "The Sun is the star at the center of the Solar System. It is a nearly perfect sphere of hot plasma, heated to incandescence by nuclear fusion reactions in its core, radiating the energy mainly as visible light and infrared radiation.";
           break;
         case "mercury":
-          msg = "Mercury is the smallest and closest planet to the sun in the Solar System. Its orbit around the Sun takes 87.97 Earth days, the shortest of all the planets in the Solar System.";
+          msg =
+            "Mercury is the smallest and closest planet to the sun in the Solar System. Its orbit around the Sun takes 87.97 Earth days, the shortest of all the planets in the Solar System.";
           break;
         case "venus":
-          msg = "Venus is the second planet from the Sun. With a rotation period of 243 Earth days, it takes longer to rotate about its axis than any other planet in the Solar System by far, and does so in the opposite direction to all but Uranus ";
-        break;
+          msg =
+            "Venus is the second planet from the Sun. With a rotation period of 243 Earth days, it takes longer to rotate about its axis than any other planet in the Solar System by far, and does so in the opposite direction to all but Uranus ";
+          break;
         case "earth":
-          msg = "Earth is the third planet from the Sun and the only astronomical object known to harbor life. About 29% of Earth's surface is land consisting of continents and islands. The remaining 71% is covered with wate";
-        break;
+          msg =
+            "Earth is the third planet from the Sun and the only astronomical object known to harbor life. About 29% of Earth's surface is land consisting of continents and islands. The remaining 71% is covered with wate";
+          break;
         case "mars":
-          msg = "Mars is the fourth planet from the Sun and the second-smallest planet in the Solar System, being larger than only Mercury.";
-        break;
+          msg =
+            "Mars is the fourth planet from the Sun and the second-smallest planet in the Solar System, being larger than only Mercury.";
+          break;
         case "jupiter":
-          msg = "Jupiter is the fifth planet from the Sun and the largest in the Solar System. It is a gas giant with a mass one-thousandth that of the Sun, but two and a half times that of all the other planets in the Solar System combined";
-        break;
+          msg =
+            "Jupiter is the fifth planet from the Sun and the largest in the Solar System. It is a gas giant with a mass one-thousandth that of the Sun, but two and a half times that of all the other planets in the Solar System combined";
+          break;
         case "saturn":
-          msg = "Saturn is the sixth planet from the Sun and the second-largest in the Solar System, after Jupiter. It is a gas giant with an average radius of about nine times that of Earth.";
-        break;
+          msg =
+            "Saturn is the sixth planet from the Sun and the second-largest in the Solar System, after Jupiter. It is a gas giant with an average radius of about nine times that of Earth.";
+          break;
         case "uranus":
-          msg = "Uranus is the seventh planet from the Sun. Uranus is similar in composition to Neptune, and both have bulk chemical compositions which differ from that of the larger gas giants Jupiter and Saturn.";
-        break;
+          msg =
+            "Uranus is the seventh planet from the Sun. Uranus is similar in composition to Neptune, and both have bulk chemical compositions which differ from that of the larger gas giants Jupiter and Saturn.";
+          break;
         case "neptune":
-          msg = "Neptune is the eighth and farthest-known Solar planet from the Sun. In the Solar System, it is the fourth-largest planet by diameter, the third-most-massive planet, and the densest giant planet.";
-        break;
+          msg =
+            "Neptune is the eighth and farthest-known Solar planet from the Sun. In the Solar System, it is the fourth-largest planet by diameter, the third-most-massive planet, and the densest giant planet.";
+          break;
         default:
           msg = "welcome to our solar system";
       }
-      //TODO : replace alert box with display function which displays text on a plane 
+      //TODO : replace alert box with display function which displays text on a plane
       alert(msg);
     }
 
     //Function to register a space object with its handler function
     function registerHandler(obj) {
       obj.addEventListener("click", function() {
-        printMsg(obj.getAttribute("id"));    //passing the id according to which information will be displayed
+        printMsg(obj.getAttribute("id")); //passing the id according to which information will be displayed
       });
     }
 
     //Function to set up event handlers of the space objects
-    function setUpHandlers() {
+    function setUpClickHandlers() {
       let objList = document.querySelectorAll(".clickable");
       for (var i = 0; i < objList.length; ++i) {
         registerHandler(objList[i]);
       }
     }
+    var tgl = true;
 
+function toggle() {
+  let objList = document.querySelectorAll('.revolution');
+    if (tgl == true)
+      {
+        for (var i = 0; i < objList.length; ++i)
+          {
+            console.log("hi")  
+            objList[i].emit('pause')
+          }
+      }
+  else
+    {
+        for (var i = 0; i < objList.length; ++i)
+          {
+              objList[i].emit('resume')
+          }
+    }
+    tgl=!tgl;
+}
+
+    
+    //Function to detect keypress for play and pause of orbiting
+    function setUpPressHandlers() {
+    document.addEventListener('keydown', (event) => {
+   
+    if (event.code === 'Enter'){
+      toggle()
+    }
+  }
+    )
+}
     AFRAME.registerComponent("log", {
       init: function() {
-        setUpHandlers()
+        setUpClickHandlers();
+        setUpPressHandlers();
+        var test = document.querySelector("#mercury")
+        test.emit('pause')
       }
     });
   </script>
   <body>
-    <a-scene log id="xyz">
+    <a-scene log>
       <a-assets>
         <img
           id="spaceTexture"
@@ -123,183 +166,175 @@
           crossorigin="anonymous"
         />
       </a-assets>
-        
-      
+
+      <!-- mixin for planet rotation-->
+      <a-mixin
+        id="rotation"
+        animation="property: rotation; loop: true; from:  0 0 0; to: 0 360 0; dur: 20000; easing: linear;"
+      ></a-mixin>
+
+      <!-- mixin for revolution -->
+      <a-mixin
+        id="orbit"
+        animation="property: rotation; loop: true; to: 0 360 0; dur: 40000; easing: linear; pauseEvents: pause; resumeEvents: resume"
+      ></a-mixin>
+
       <!-- 360-degree image. -->
       <a-sky src="#spaceTexture" rotation=" 0 -360 0"></a-sky>
-      
-      <!--TODO: remove repetitive code with mixin-->
-      
-      <!-- SUN -->
+
+      <!--SUN-->
       <a-sphere
-        color="#fff"
-        src="#sunTexture"
-        radius="3"
-        position="0 2 -7"
         id="sun"
         class="clickable"
+        position="0 0 0"
+        radius="4"
+        src="#sunTexture"
+        mixin="rotation"
       >
-        <a-animation
-          attribute="rotation"
-          dur="61200"
-          easing="linear"
-          from="0 0 0"
-          to="0 360 0"
-          repeat="indefinite"
-        ></a-animation>
-      </a-sphere>
-      <!-- MERCURY -->
-      <a-sphere
-        color="#fff"
-        src="#mercuryTexture"
-        radius="0.2"
-        position="3.5 2 -7"
-        id="mercury"
-        class="clickable"
-      >
-        <a-animation
-          attribute="rotation"
-          dur="14080"
-          easing="linear"
-          to="0 360 0"
-          repeat="indefinite"
-        ></a-animation>
-      </a-sphere>
-      <!-- VENUS-->
-      <a-sphere
-        color="#fff"
-        src="#venusTexture"
-        radius="0.3"
-        position="4.5 2 -7"
-        id="venus"
-        class="clickable"
-      >
-        <a-animation
-          attribute="rotation"
-          dur="14080"
-          easing="linear"
-          to="0 360 0"
-          repeat="indefinite"
-        ></a-animation>
-      </a-sphere>
-      <!-- EARTH -->
-      <a-sphere
-        color="#fff"
-        src="#earthTexture"
-        radius="0.35"
-        position="6 2 -7"
-        id="earth"
-        class="clickable"
-      >
-        <a-animation
-          attribute="rotation"
-          dur="14080"
-          easing="linear"
-          to="0 360 0"
-          repeat="indefinite"
-        ></a-animation>
-      </a-sphere>
-      <!-- MARS -->
-      <a-sphere
-        color="#fff"
-        src="#marsTexture"
-        radius="0.25"
-        position="7.5 2 -7"
-        id="mars"
-        class="clickable"
-      >
-        <a-animation
-          attribute="rotation"
-          dur="14080"
-          easing="linear"
-          to="0 360 0"
-          repeat="indefinite"
-        ></a-animation>
-      </a-sphere>
-      <!-- JUPITER -->
-      <a-sphere
-        color="#fff"
-        src="#jupiterTexture"
-        radius="1.5"
-        position="10.5 2 -7"
-        id="jupiter"
-        class="clickable"
-      >
-        <a-animation
-          attribute="rotation"
-          dur="61200"
-          easing="linear"
-          to="0 360 0"
-          repeat="indefinite"
-        ></a-animation>
-      </a-sphere>
-      <!-- SATURN -->
-      <a-sphere
-        color="#fff"
-        src="#saturnTexture"
-        radius="1"
-        position="14.5 2 -7"
-        id="saturn"
-        class="clickable"
-      >
-        <a-animation
-          attribute="rotation"
-          dur="14080"
-          easing="linear"
-          to="0 360 0"
-          repeat="indefinite"
-        ></a-animation>
-      </a-sphere>
-      <!-- saturn ring-->
-      <a-circle
-        color="#BCBCBC"
-        radius="1.5"
-        rotation="-65 -80 81 "
-        position="14.5 2 -7"
-        id="ring"
-      >
-      </a-circle>
-      <!-- URANUS -->
-      <a-sphere
-        color="#fff"
-        src="#uranusTexture"
-        radius="0.5"
-        position="17 2 -7"
-        id="uranus"
-        class="clickable"
-      >
-        <a-animation
-          attribute="rotation"
-          dur="14080"
-          easing="linear"
-          to="0 360 0"
-          repeat="indefinite"
-        ></a-animation>
-      </a-sphere>
-      <!-- NEPTUNE -->
-      <a-sphere
-        color="#fff"
-        src="#neptuneTexture"
-        radius="0.4"
-        position="19 2 -7"
-        id="neptune"
-        class="clickable"
-      >
-        <a-animation
-          attribute="rotation"
-          dur="14080"
-          easing="linear"
-          to="0 360 0"
-          repeat="indefinite"
-        ></a-animation>
       </a-sphere>
 
-      <!-- Info plane-->
-      <!--       <a-plane position="0 5.2 0" scale="4 2 2">
-    </a-plane> -->
+      <!--MERCURY-->
+      <a-entity
+        id="orbit-mercury"
+        class="revolution"
+        mixin="orbit"
+        animation="dur: 20000;"
+      >
+        <a-sphere
+          id="mercury"
+          class="clickable"
+          position="0 0 5"
+          radius=".2"
+          src="#mercuryTexture"
+          mixin="orbit"
+        ></a-sphere>
+      </a-entity>
+      <!--VENUS-->
+      <a-entity id="orbit-venus" class="revolution" mixin="orbit">
+        <a-sphere
+          id="venus"
+          class="clickable"
+          position="0 0 7.5"
+          radius=".3"
+          src="#venusTexture"
+          mixin="rotation"
+        ></a-sphere>
+      </a-entity>
+      <!--EARTH-->
+      <a-entity id="orbit-earth" class="revolution" mixin="orbit">
+        <a-sphere
+          id="earth"
+          class="clickable"
+          position="0 0 9.5"
+          radius=".4"
+          src="#earthTexture"
+          mixin="rotation"
+        ></a-sphere>
+      </a-entity>
+      <!--MARS-->
+      <a-entity id="orbit-mars" class="revolution" mixin="orbit">
+        <a-sphere
+          id="mars"
+          class="clickable"
+          position="0 0 11.5"
+          radius=".3"
+          src="#marsTexture"
+          mixin="rotation"
+        ></a-sphere>
+      </a-entity>
+      <!--JUPITER-->
+      <a-entity
+        id="orbit-jupiter"
+        class="revolution"
+        mixin="orbit"
+        animation="dur: 70000;"
+      >
+        <a-sphere
+          id="jupiter"
+          class="clickable"
+          position="0 0 16"
+          radius="2.5"
+          src="#jupiterTexture"
+          mixin="rotation"
+        ></a-sphere>
+      </a-entity>
+      <!--SATURN-->
+      <a-entity id="orbit-saturn" class="revolution" mixin="orbit">
+        <a-entity id="saturn-container" position="0 0 21">
+          <a-sphere
+            radius="1.8"
+            id="saturn"
+            class="clickable"
+            src="#saturnTexture"
+            mixin="rotation"
+          ></a-sphere>
+          <a-entity
+            id="saturn-ring-1"
+            geometry="primitive: torus; radius: 3.2; radiusTubular: 0.1;segmentsTubular: 50"
+            material="color: #BCBCBC;"
+            rotation="-90 -10 0"
+            scale="1 1 0.1"
+          ></a-entity>
+          <a-entity
+            id="saturn-ring-2"
+            geometry="primitive: torus; radius: 2.4; radiusTubular: 0.2;segmentsTubular: 50"
+            material="color: #BCBCBC;"
+            rotation="90 0 0"
+            scale="1 1 0.1"
+          ></a-entity>
+        </a-entity>
+      </a-entity>
+      <!--URANUS-->
+      <a-entity
+        id="orbit-uranus"
+        class="revolution"
+        mixin="orbit"
+        animation="dur: 50000;"
+      >
+        <a-sphere
+          id="uranus"
+          class="clickable"
+          radius=".75"
+          position=" 0 0 28"
+          src="#uranusTexture"
+          mixin="rotation"
+        ></a-sphere>
+      </a-entity>
+
+      <!--NEPTUNE-->
+      <a-entity
+        id="orbit-neptune"
+        class="revolution"
+        mixin="orbit"
+        animation="dur: 35000;"
+      >
+        <a-entity id="neptune-container" position="0 0 35">
+          <a-sphere
+            id="neptune"
+            class="clickable"
+            radius="1"
+            src="#neptuneTexture"
+            mixin="rotation"
+          ></a-sphere>
+          <a-entity
+            id="neptune-ring-1"
+            geometry="primitive: torus; radius: 2; radiusTubular: 0.01;segmentsTubular: 50"
+            material="color: #FFFFFF;opacity: 0.8"
+            rotation="90 0 0"
+            scale="1 1 0.1"
+          ></a-entity>
+          <a-entity
+            id="neptune-ring-2"
+            geometry="primitive: torus; radius: 1.7; radiusTubular: 0.05;segmentsTubular: 50"
+            material="color: #FFFFFF;opacity: 0.8"
+            rotation="90 0 0"
+            scale="1 1 0.1"
+          ></a-entity>
+        </a-entity>
+      </a-entity>
 
       <!-- Camera + cursor. -->
-      <a-camera position="0 0 7">
+      <a-camera position="0 0 17">
         <a-cursor id="cursor"></a-cursor>
       </a-camera>
     </a-scene>
