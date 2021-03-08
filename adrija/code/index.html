@@ -71,47 +71,35 @@
       }
     }
     var tgl = true;
-
-function toggle() {
-  let objList = document.querySelectorAll('.revolution');
-    if (tgl == true)
-      {
-        for (var i = 0; i < objList.length; ++i)
-          {
-            console.log("hi")  
-            objList[i].emit('pause')
-          }
-      }
-  else
-    {
-        for (var i = 0; i < objList.length; ++i)
-          {
-              objList[i].emit('resume')
-          }
-    }
-    tgl=!tgl;
-}
-
     
+    //function to toggle between start and pause of orbitting
+    function toggle() {
+      let objList = document.querySelectorAll(".revolution");
+      if (tgl == true) {
+        for (var i = 0; i < objList.length; ++i) {
+          console.log("hi");
+          objList[i].emit("pause");
+        }
+      } else {
+        for (var i = 0; i < objList.length; ++i) {
+          objList[i].emit("resume");
+        }
+      }
+      tgl = !tgl;
+    }
+
     //Function to detect keypress for play and pause of orbiting
     function setUpPressHandlers() {
-    document.addEventListener('keydown', (event) => {
-   
-    if (event.code === 'Enter'){
-      toggle()
+      document.addEventListener("keydown", event => {
+        if (event.code === "Enter") {
+          toggle();
+        }
+      });
     }
-  }
-    )
-}
     AFRAME.registerComponent("log", {
       init: function() {
         setUpClickHandlers();
         setUpPressHandlers();
-// <<<<<<< Adrija
-// =======
-//         var test = document.querySelector("#mercury")
-//         test.emit('pause')
-// >>>>>>> main
       }
     });
   </script>
@@ -338,7 +326,7 @@ function toggle() {
 
       <!-- Camera + cursor. -->
       <a-camera position="0 0 17">
-        <a-cursor id="cursor"></a-cursor>
+        <a-cursor id="cursor" color="#ff0000"></a-cursor>
       </a-camera>
     </a-scene>
   </body>
